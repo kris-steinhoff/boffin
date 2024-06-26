@@ -1,0 +1,34 @@
+default_stages:
+  - pre-commit
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
+  - repo: local
+    hooks:
+      - id: typos
+        name: typos
+        language: system
+        entry: poetry run typos --force-exclude
+        types_or: [python, pyi]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.10
+    hooks:
+      - id: ruff
+        args: []
+        types_or: [python, jupyter]
+      - id: ruff-format
+        args: [--check, --diff, --exclude=**/migrations/**]
+        types_or: [python, jupyter]
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        language: system
+        entry: poetry run mypy
+        types_or: [python, pyi]

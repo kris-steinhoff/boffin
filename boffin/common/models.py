@@ -36,7 +36,7 @@ class PrefixedShortUUID(TypeDecorator):
                 "Invalid value for PrefixedShortUUID (must include an underscore "
                 f"character): {value}"
             )
-        return uuid.UUID(int=Base62().decode(uuid_encoded))
+        return uuid.UUID(int=Base62.decode(uuid_encoded))
 
     def process_result_value(self, value: Any | None, dialect: Dialect) -> Any:
         try:
@@ -47,12 +47,12 @@ class PrefixedShortUUID(TypeDecorator):
         except (TypeError, ValueError):
             raise ValueError(f"Invalid value for PrefixedShortUUID: {value}")
 
-        return f"{self.prefix}_{Base62().encode(value_int)}"
+        return f"{self.prefix}_{Base62.encode(value_int)}"
 
 
 def primary_key_prefixed_short_uuid(prefix: str) -> Any:
     def new_prefixed_short_uuid():
-        return f"{prefix}_{Base62().encode(uuid.uuid4().int)}"
+        return f"{prefix}_{Base62.encode(uuid.uuid4().int)}"
 
     return Field(
         default_factory=new_prefixed_short_uuid,

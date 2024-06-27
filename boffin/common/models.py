@@ -5,7 +5,7 @@ from sqlalchemy import UUID, Column, DateTime, Dialect, TypeDecorator, func
 from sqlalchemy.orm import declared_attr
 from sqlmodel import Field
 
-from common.base62 import Base62
+from .base62 import Base62
 
 
 class PrefixedShortUUID(TypeDecorator):

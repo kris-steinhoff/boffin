@@ -11,7 +11,7 @@ from boffin.common.base62 import Base62
 
 
 class PrefixedShortUUID(TypeDecorator):
-    impl = UUID
+    impl = UUID(as_uuid=True)
 
     @classmethod
     def __get_pydantic_core_schema__(
@@ -35,7 +35,7 @@ class PrefixedShortUUID(TypeDecorator):
                 "Invalid value for PrefixedShortUUID (must include an underscore "
                 f"character): {value}"
             )
-        return Base62().decode(uuid_encoded)
+        return uuid.UUID(int=Base62().decode(uuid_encoded))
 
     def process_result_value(self, value: Any | None, dialect: Dialect) -> Any:
         try:

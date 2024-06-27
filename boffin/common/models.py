@@ -12,6 +12,7 @@ from boffin.common.base62 import Base62
 
 class PrefixedShortUUID(TypeDecorator):
     impl = UUID(as_uuid=True)
+    cache_ok = True
 
     @classmethod
     def __get_pydantic_core_schema__(

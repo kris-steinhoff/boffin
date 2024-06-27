@@ -1,15 +1,23 @@
 import uuid
 from typing import Any
 
+from pydantic import GetCoreSchemaHandler
+from pydantic_core import CoreSchema, core_schema
 from sqlalchemy import UUID, Column, DateTime, Dialect, TypeDecorator, func
 from sqlalchemy.orm import declared_attr
 from sqlmodel import Field
 
-from .base62 import Base62
+from boffin.common.base62 import Base62
 
 
 class PrefixedShortUUID(TypeDecorator):
     impl = UUID
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> CoreSchema:
+        return core_schema.no_info_after_validator_function(cls, handler(str))
 
     def __init__(self, prefix: str, *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
@@ -20,7 +28,13 @@ class PrefixedShortUUID(TypeDecorator):
         self.prefix = prefix
 
     def process_bind_param(self, value: Any | None, dialect: Dialect) -> Any:
-        uuid_encoded = str(value).split("_")[1]
+        try:
+            uuid_encoded = str(value).split("_")[1]
+        except (IndexError, AttributeError):
+            raise ValueError(
+                "Invalid value for PrefixedShortUUID (must include an underscore "
+                f"character): {value}"
+            )
         return Base62().decode(uuid_encoded)
 
     def process_result_value(self, value: Any | None, dialect: Dialect) -> Any:
@@ -37,7 +51,7 @@ class PrefixedShortUUID(TypeDecorator):
 
 def primary_key_prefixed_short_uuid(prefix: str) -> Any:
     def new_prefixed_short_uuid():
-        return Base62().encode(uuid.uuid4().int)
+        return f"{prefix}_{Base62().encode(uuid.uuid4().int)}"
 
     return Field(
         default_factory=new_prefixed_short_uuid,

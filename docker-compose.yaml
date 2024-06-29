@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/boffin
+    env_file:
+      - .env
+    volumes:
+      - .:/app:z
+    ports:
+      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:5678:5678"
+
+  db:
+    image: postgres:16.0-alpine
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      POSTGRES_DB: boffin
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_run:/var/run/postgresql
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:5432:5432"
+
+volumes:
+  db:
+  db_run:

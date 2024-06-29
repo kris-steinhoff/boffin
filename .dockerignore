@@ -1,0 +1,12 @@
+*.pyc
+/.mypy_cache/
+/.pytest_cache/
+/.github/
+/.deploy/
+/.ruff_cache/
+/dist/
+/boffin.code-workspace
+/db.sqlite3
+/.git*
+/.pre-commit-config.yaml
+/.env

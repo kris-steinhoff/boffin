@@ -13,6 +13,7 @@ sqlmodel = "^0.0.19"
 fastapi-users = { extras = ["sqlalchemy"], version = "^13.0.0" }
 psycopg = {extras = ["binary"], version = "^3.1.19"}
 pydantic = "^2.7.4"
+strawberry-graphql = {extras = ["fastapi"], version = "^0.235.1"}
 
 
 [tool.poetry.group.dev.dependencies]

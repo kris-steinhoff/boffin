@@ -11,9 +11,9 @@ fastapi = "^0.111.0"
 sqlalchemy = "^2.0.31"
 sqlmodel = "^0.0.19"
 fastapi-users = { extras = ["sqlalchemy"], version = "^13.0.0" }
-psycopg = {extras = ["binary"], version = "^3.1.19"}
+psycopg = { extras = ["binary"], version = "^3.1.19" }
 pydantic = "^2.7.4"
-strawberry-graphql = {extras = ["fastapi"], version = "^0.235.1"}
+strawberry-graphql = { extras = ["fastapi"], version = "^0.235.1" }
 
 
 [tool.poetry.group.dev.dependencies]
@@ -23,6 +23,7 @@ mypy = "1.7.1"
 debugpy = "^1.8.0"
 pyparsing = "^3.1.2"
 ipykernel = "^6.29"
+strawberry-graphql = { extras = ["debug-server"], version = "^0.235.1" }
 
 
 [tool.poetry.group.test.dependencies]

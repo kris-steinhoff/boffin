@@ -25,14 +25,13 @@ async def get_student(student_id: StudentId) -> Student | None:
 @router.put("/{student_id}")
 async def update_student(
     student_id: StudentId,
-    name: str | None = None,
-    secret_name: str | None = None,
-    age: int | None = None,
+    first_name: str | None = None,
+    last_name: str | None = None,
 ) -> Student | None:
     return await service.update_student(
         student_id=student_id,
-        first_name=name,
-        last_name=secret_name,
+        first_name=first_name,
+        last_name=last_name,
     )
 
 

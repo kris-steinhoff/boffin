@@ -8,6 +8,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/boffin
+      REDIS_URL: redis://redis:6379/0
     env_file:
       - .env
     volumes:
@@ -35,6 +36,19 @@ services:
       retries: 5
     ports:
       - "127.0.0.1:5432:5432"
+
+  redis:
+    image: redis:7.2-alpine
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "127.0.0.1:6379:6379"
 
 volumes:
   db:

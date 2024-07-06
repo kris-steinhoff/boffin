@@ -1,5 +1,9 @@
+import asyncio
+from typing import AsyncGenerator
+
 import strawberry
 
+from boffin.config import get_settings
 from boffin.student import StudentId, service
 from boffin.student.model import Student
 from boffin.student.rest import list_students
@@ -44,3 +48,29 @@ class StudentMutation:
     async def create_student(self, first_name: str, last_name: str) -> StudentType:
         student = await service.create_student(first_name, last_name)
         return StudentType.from_pydantic(student)
+
+
+@strawberry.type
+class StudentModification:
+    id: str
+    first_name: str | None = None
+
+
+@strawberry.type
+class StudentSubscription:
+    @strawberry.subscription
+    async def student_modifications(self) -> AsyncGenerator[StudentModification, None]:
+        client = get_settings().redis_client
+        async with client.pubsub(ignore_subscribe_messages=True) as pubsub:
+            await pubsub.subscribe("student_modified")
+            async for message in pubsub.listen():
+                if message is None:
+                    continue
+                yield StudentModification(id=message["data"].decode())
+
+    @strawberry.subscription
+    async def count(self, target: int = 100) -> AsyncGenerator[int, None]:
+        for i in range(target):
+            await asyncio.sleep(0.5)
+            yield i
+            await asyncio.sleep(0.5)

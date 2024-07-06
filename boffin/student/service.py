@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 
 from boffin.common.db import ENGINE
+from boffin.config import get_settings
 from boffin.student import StudentId
 from boffin.student.model import Student
 
@@ -12,6 +13,7 @@ async def create_student(first_name: str, last_name: str) -> Student:
     session.commit()
     session.refresh(student)
     session.close()
+    await get_settings().redis_client.publish("student_modified", str(student.id))
     return student
 
 
@@ -52,6 +54,7 @@ async def update_student(
     session.commit()
     session.refresh(student)
     session.close()
+    await get_settings().redis_client.publish("student_modified", str(student.id))
     return student
 
 
@@ -65,4 +68,5 @@ async def delete_student(student_id: str) -> None:
     session.delete(student)
     session.commit()
     session.close()
+    await get_settings().redis_client.publish("student_modified", str(student.id))
     return None

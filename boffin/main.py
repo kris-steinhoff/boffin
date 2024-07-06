@@ -29,3 +29,18 @@ schema = strawberry.Schema(query=Query, mutation=Mutation, subscription=Subscrip
 graphql_app: GraphQLRouter = GraphQLRouter(schema)
 
 app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)
+
+if __name__ == "__main__":
+    import uvicorn
+
+    from boffin.config import get_settings
+
+    settings = get_settings()
+
+    uvicorn.run(
+        "boffin.main:app",
+        host=settings.server_host,
+        port=settings.server_port,
+        workers=settings.server_workers,
+        reload=settings.server_reload,
+    )

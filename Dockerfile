@@ -8,20 +8,22 @@ COPY pyproject.toml poetry.lock /tmp/
 RUN poetry --directory=/tmp/ export --without-hashes -f requirements.txt -o /tmp/requirements-prod.txt
 
 FROM base as dev
-CMD ["poetry", "run", "fastapi", "dev", "boffin/main.py", "--host=0.0.0.0", "--port=8000", "--app=app"]
+ENV SERVER_RELOAD=1
+CMD ["poetry", "run", "python3", "boffin/main.py"]
 RUN mkdir /app
 WORKDIR /app
 COPY --from=base /tmp/pyproject.toml /tmp/poetry.lock ./
 RUN poetry install --with=dev --with=test
 COPY . .
-
-ENV DATABASE_URL="sqlite:///db.sqlite3"
+RUN poetry install
 
 FROM python:3.12.4-slim as prod
-CMD ["fastapi", "run", "boffin/main.py", "--app=app"]
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1
+ENV SERVER_WORKERS=4
+CMD ["python3", "boffin/main.py"]
 RUN mkdir /app
 WORKDIR /app
 COPY --from=base /tmp/requirements-prod.txt ./
 RUN pip install -r requirements-prod.txt
-
 COPY . .
+RUN pip install .

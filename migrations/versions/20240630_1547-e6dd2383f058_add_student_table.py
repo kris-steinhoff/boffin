@@ -12,7 +12,7 @@ import sqlalchemy as sa
 import sqlmodel
 from alembic import op
 
-from boffin.common.models import PrefixedShortUUID
+from boffin.common.models import PrefixedID
 
 revision: str = "e6dd2383f058"
 down_revision: Union[str, None] = None
@@ -23,7 +23,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     op.create_table(
         "student",
-        sa.Column("id", PrefixedShortUUID(prefix="student"), nullable=False),
+        sa.Column("id", PrefixedID(prefix="student"), nullable=False),
         sa.Column("first_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("last_name", sqlmodel.sql.sqltypes.AutoString(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),

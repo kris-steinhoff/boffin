@@ -10,7 +10,7 @@ from sqlmodel import Field
 from boffin.common.base62 import Base62
 
 
-class PrefixedShortUUID(TypeDecorator):
+class PrefixedID(TypeDecorator):
     impl = UUID(as_uuid=True)
     cache_ok = True
 
@@ -56,7 +56,7 @@ def primary_key_prefixed_short_uuid(prefix: str) -> Any:
 
     return Field(
         default_factory=new_prefixed_short_uuid,
-        sa_column=Column(PrefixedShortUUID(prefix), primary_key=True),
+        sa_column=Column(PrefixedID(prefix), primary_key=True),
     )
 
 

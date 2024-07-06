@@ -1,11 +1,12 @@
 from contextlib import contextmanager
-from os import getenv
 from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlmodel import Session
 
-ENGINE = create_engine(getenv("DATABASE_URL", ""))
+from boffin.config import get_settings
+
+ENGINE = create_engine(get_settings().database_url)
 
 
 @contextmanager

@@ -15,6 +15,7 @@ psycopg = { extras = ["binary"], version = "^3.1.19" }
 pydantic = "^2.7.4"
 strawberry-graphql = { extras = ["fastapi"], version = "^0.235.1" }
 alembic = "^1.13.2"
+pydantic-settings = "^2.3.4"
 
 
 [tool.poetry.group.dev.dependencies]

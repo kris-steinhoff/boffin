@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from strawberry.fastapi import GraphQLRouter
 from strawberry.tools import merge_types
 
-from boffin.student.graphql import StudentQuery
+from boffin.student.graphql import StudentMutation, StudentQuery
 from boffin.student.rest import router as student_router
 
 app = FastAPI(
@@ -17,7 +17,11 @@ Query = merge_types(
     "Query",
     (StudentQuery,),
 )
-schema = strawberry.Schema(Query)
+Mutation = merge_types(
+    "Mutation",
+    (StudentMutation,),
+)
+schema = strawberry.Schema(query=Query, mutation=Mutation)
 graphql_app: GraphQLRouter = GraphQLRouter(schema)
 
 app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)

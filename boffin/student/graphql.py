@@ -7,6 +7,7 @@ from boffin.config import get_settings
 from boffin.student import StudentId, service
 from boffin.student.model import Student
 from boffin.student.rest import list_students
+from boffin.student.types import StudentDataEvent
 
 
 @strawberry.experimental.pydantic.type(model=Student)
@@ -50,23 +51,23 @@ class StudentMutation:
         return StudentType.from_pydantic(student)
 
 
-@strawberry.type
-class StudentModification:
-    id: str
-    first_name: str | None = None
+@strawberry.experimental.pydantic.type(model=StudentDataEvent, all_fields=True)
+class StudentDataEventType:
+    pass
 
 
 @strawberry.type
 class StudentSubscription:
     @strawberry.subscription
-    async def student_modifications(self) -> AsyncGenerator[StudentModification, None]:
+    async def student_modifications(self) -> AsyncGenerator[StudentDataEventType, None]:
         client = get_settings().redis_client
         async with client.pubsub(ignore_subscribe_messages=True) as pubsub:
-            await pubsub.subscribe("student_modified")
+            await pubsub.subscribe(StudentDataEvent.get_channel_name())
             async for message in pubsub.listen():
                 if message is None:
                     continue
-                yield StudentModification(id=message["data"].decode())
+                event = StudentDataEvent.model_validate_json(message["data"])
+                yield StudentDataEventType.from_pydantic(event)
 
     @strawberry.subscription
     async def count(self, target: int = 100) -> AsyncGenerator[int, None]:

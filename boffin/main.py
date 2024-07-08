@@ -7,6 +7,7 @@ from strawberry.fastapi import GraphQLRouter
 from strawberry.tools import merge_types
 
 from boffin.config import get_settings
+from boffin.status.rest import router as status_router
 from boffin.student.graphql import StudentMutation, StudentQuery, StudentSubscription
 from boffin.student.rest import router as student_router
 
@@ -17,6 +18,7 @@ app = FastAPI(
     description="[GraphQL](/graphql)",
 )
 app.include_router(student_router)
+app.include_router(status_router)
 
 
 Query = merge_types(
@@ -48,7 +50,7 @@ async def logging_middleware(request: Request, call_next) -> Response:
 
     response: Response = await call_next(request)
 
-    if get_settings().dev_mode:
+    if get_settings().dev_mode and request.url.path != "/status/healthcheck":
         logger.info(
             f"{request.method.upper()} {request.url.path} "
             f"{request.scope.get("type", "").upper()}/"

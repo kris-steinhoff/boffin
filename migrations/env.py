@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 # Import models here for 'autogenerate' support
-from boffin.student.model import Student  # noqa
+from boffin.student.models import Student  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -4,8 +4,8 @@ from typing import AsyncGenerator
 import strawberry
 
 from boffin.config import get_settings
-from boffin.student import StudentId, service
-from boffin.student.model import Student
+from boffin.student import StudentId, services
+from boffin.student.models import Student
 from boffin.student.rest import list_students
 from boffin.student.types import StudentDataEvent
 
@@ -26,7 +26,7 @@ class StudentType:
 
 
 async def resolve_student(student_id: str) -> StudentType | None:
-    student = await service.get_student(StudentId(student_id))
+    student = await services.get_student(StudentId(student_id))
     if student is None:
         return None
     return StudentType.from_pydantic(student)
@@ -47,7 +47,7 @@ class StudentQuery:
 class StudentMutation:
     @strawberry.mutation
     async def create_student(self, first_name: str, last_name: str) -> StudentType:
-        student = await service.create_student(first_name, last_name)
+        student = await services.create_student(first_name, last_name)
         return StudentType.from_pydantic(student)
 
 

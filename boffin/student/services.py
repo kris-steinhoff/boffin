@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 
 from boffin.config import get_settings
 from boffin.student import StudentId
-from boffin.student.model import Student
+from boffin.student.models import Student
 from boffin.student.types import StudentDataEvent
 
 __all__ = [

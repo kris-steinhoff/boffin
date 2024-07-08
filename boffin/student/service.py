@@ -1,7 +1,7 @@
 import structlog
 from sqlmodel import Session, select
 
-from boffin.common.db import ENGINE
+from boffin.config import get_settings
 from boffin.student import StudentId
 from boffin.student.model import Student
 from boffin.student.types import StudentDataEvent
@@ -20,7 +20,7 @@ logger = structlog.get_logger()
 
 async def create_student(first_name: str, last_name: str) -> Student:
     student = Student(first_name=first_name, last_name=last_name)
-    session = Session(ENGINE)
+    session = Session(get_settings().database_engine)
     session.add(student)
     session.commit()
     session.refresh(student)
@@ -31,7 +31,7 @@ async def create_student(first_name: str, last_name: str) -> Student:
 
 
 async def get_student(student_id: StudentId) -> Student | None:
-    session = Session(ENGINE)
+    session = Session(get_settings().database_engine)
     student = session.exec(
         select(Student).where(Student.id == student_id)
     ).one_or_none()
@@ -41,7 +41,7 @@ async def get_student(student_id: StudentId) -> Student | None:
 
 
 async def list_students() -> list[Student]:
-    session = Session(ENGINE)
+    session = Session(get_settings().database_engine)
     result = session.exec(select(Student))
     studentes = [h for h in result]
     session.close()
@@ -53,7 +53,7 @@ async def update_student(
     first_name: str | None = None,
     last_name: str | None = None,
 ) -> Student | None:
-    session = Session(ENGINE)
+    session = Session(get_settings().database_engine)
     student = session.get(Student, student_id)
     if student is None:
         return None
@@ -72,7 +72,7 @@ async def update_student(
 
 
 async def delete_student(student_id: str) -> None:
-    session = Session(ENGINE)
+    session = Session(get_settings().database_engine)
     student = session.get(Student, student_id)
 
     if student is None:

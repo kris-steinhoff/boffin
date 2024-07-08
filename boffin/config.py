@@ -2,6 +2,7 @@ from functools import cache, cached_property
 
 import redis.asyncio as redis
 from pydantic_settings import BaseSettings
+from sqlalchemy import Engine, create_engine
 
 
 class Settings(BaseSettings):
@@ -18,6 +19,10 @@ class Settings(BaseSettings):
     @cached_property
     def redis_client(self) -> redis.Redis:
         return redis.from_url(self.redis_url)
+
+    @cached_property
+    def database_engine(self) -> Engine:
+        return create_engine(self.database_url)
 
 
 @cache

@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     server_workers: int = 1
     server_reload: bool = False
 
+    dev_mode: bool = False
+
     @cached_property
     def redis_client(self) -> redis.Redis:
         return redis.from_url(self.redis_url)

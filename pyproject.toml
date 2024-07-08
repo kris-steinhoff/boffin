@@ -17,6 +17,7 @@ strawberry-graphql = { extras = ["fastapi"], version = "^0.235.1" }
 alembic = "^1.13.2"
 pydantic-settings = "^2.3.4"
 redis = "^5.0.7"
+structlog = "^24.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

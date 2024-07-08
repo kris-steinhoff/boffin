@@ -1,3 +1,4 @@
+import structlog
 from sqlmodel import Session, select
 
 from boffin.common.db import ENGINE
@@ -14,6 +15,9 @@ __all__ = [
 ]
 
 
+logger = structlog.get_logger()
+
+
 async def create_student(first_name: str, last_name: str) -> Student:
     student = Student(first_name=first_name, last_name=last_name)
     session = Session(ENGINE)
@@ -22,6 +26,7 @@ async def create_student(first_name: str, last_name: str) -> Student:
     session.refresh(student)
     session.close()
     await StudentDataEvent.emit_created(str(student.id))
+    logger.info("Student created", student_id=student.id)
     return student
 
 

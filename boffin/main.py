@@ -1,7 +1,9 @@
 import uuid
+from http import HTTPStatus
 
 import strawberry
 import structlog
+from colorama import Back, Fore, Style
 from fastapi import FastAPI, Request, Response
 from strawberry.fastapi import GraphQLRouter
 from strawberry.tools import merge_types
@@ -39,6 +41,30 @@ graphql_app: GraphQLRouter = GraphQLRouter(schema)
 app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)
 
 
+async def log_access(request: Request, response: Response) -> None:
+    if not get_settings().dev_mode or request.url.path == "/status/healthcheck":
+        return
+
+    status_color = Fore.RESET
+
+    if response.status_code >= 200:
+        status_color = Fore.GREEN
+    if response.status_code >= 300:
+        status_color = Fore.CYAN
+    if response.status_code >= 400:
+        status_color = Fore.RED
+    if response.status_code >= 500:
+        status_color = Style.BRIGHT + Back.RED
+
+    access = (
+        f'{Style.BRIGHT}"{request.method.upper()} {request.url.path} '
+        f"{request.scope.get("type", "").upper()}/"
+        f'{request.scope.get("http_version", "")}"{Style.RESET_ALL} '
+        f"{status_color}{response.status_code} {HTTPStatus(response.status_code).phrase}{Style.RESET_ALL}"
+    )
+    logger.info(access, status_code=response.status_code)
+
+
 @app.middleware("http")
 async def logging_middleware(request: Request, call_next) -> Response:
     request_id = request.headers.get("request-id", uuid.uuid4().hex)
@@ -50,12 +76,8 @@ async def logging_middleware(request: Request, call_next) -> Response:
 
     response: Response = await call_next(request)
 
-    if get_settings().dev_mode and request.url.path != "/status/healthcheck":
-        logger.info(
-            f"{request.method.upper()} {request.url.path} "
-            f"{request.scope.get("type", "").upper()}/"
-            f"{request.scope.get("http_version", "")} {response.status_code}"
-        )
+    await log_access(request, response)
+
     return response
 
 

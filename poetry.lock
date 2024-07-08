@@ -3033,6 +3033,17 @@ files = [
 types-setuptools = "*"
 
 [[package]]
+name = "types-colorama"
+version = "0.4.15.20240311"
+description = "Typing stubs for colorama"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-colorama-0.4.15.20240311.tar.gz", hash = "sha256:a28e7f98d17d2b14fb9565d32388e419f4108f557a7d939a66319969b2b99c7a"},
+    {file = "types_colorama-0.4.15.20240311-py3-none-any.whl", hash = "sha256:6391de60ddc0db3f147e31ecb230006a6823e81e380862ffca1e4695c13a0b8e"},
+]
+
+[[package]]
 name = "types-pyopenssl"
 version = "24.1.0.20240425"
 description = "Typing stubs for pyOpenSSL"
@@ -3483,4 +3494,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "ba82884db4fba129cc9814a5f666f45272e90ad75341dd3ea885b85021705a9b"
+content-hash = "eb408618f087082c20b5eb4540c0587095998308ab69a6af3ed8aaa874c5be19"

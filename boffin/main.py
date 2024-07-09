@@ -74,9 +74,16 @@ async def logging_middleware(request: Request, call_next) -> Response:
         request_id=request_id,
     )
 
-    response: Response = await call_next(request)
-
-    await log_access(request, response)
+    try:
+        response: Response = await call_next(request)
+    except Exception as exc:
+        logger.exception(exc)
+        response = Response(
+            content="Internal Server Error",
+            status_code=500,
+        )
+    finally:
+        await log_access(request, response)
 
     return response
 

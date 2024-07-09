@@ -36,9 +36,7 @@ Subscription = merge_types(
     (StudentSubscription,),
 )
 schema = strawberry.Schema(query=Query, mutation=Mutation, subscription=Subscription)
-graphql_app: GraphQLRouter = GraphQLRouter(schema)
-
-app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)
+app.include_router(GraphQLRouter(schema), prefix="/graphql", include_in_schema=False)
 
 
 async def log_access(request: Request, response: Response) -> None:

@@ -1,4 +1,3 @@
-import asyncio
 from typing import AsyncGenerator
 
 import strawberry
@@ -68,10 +67,3 @@ class StudentSubscription:
                     continue
                 event = StudentDataEvent.model_validate_json(message["data"])
                 yield StudentDataEventType.from_pydantic(event)
-
-    @strawberry.subscription
-    async def count(self, target: int = 100) -> AsyncGenerator[int, None]:
-        for i in range(target):
-            await asyncio.sleep(0.5)
-            yield i
-            await asyncio.sleep(0.5)

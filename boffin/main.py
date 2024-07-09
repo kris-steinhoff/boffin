@@ -58,10 +58,10 @@ async def log_access(request: Request, response: Response) -> None:
 
     access = (
         f'{Style.BRIGHT}"{request.method.upper()} {request.url.path} '
-        f"{request.scope.get("type", "").upper()}/"
-        f'{request.scope.get("http_version", "")}"{Style.RESET_ALL} '
+        f'{request.scope.get("type", "").upper()}/{request.scope.get("http_version", "")}"{Style.RESET_ALL} '
         f"{status_color}{response.status_code} {HTTPStatus(response.status_code).phrase}{Style.RESET_ALL}"
     )
+
     logger.info(access, status_code=response.status_code)
 
 

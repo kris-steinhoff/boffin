@@ -41,12 +41,10 @@ app.include_router(student_router)
 
 
 async def log_access(request: Request, response: Response) -> None:
-    if not any(
-        (
-            get_settings().access_log,
-            get_settings().dev_mode,
-            request.url.path != "/status/healthcheck",
-        )
+    if (
+        not get_settings().access_log
+        or not get_settings().dev_mode
+        or request.url.path == "/status/healthcheck"
     ):
         return
 

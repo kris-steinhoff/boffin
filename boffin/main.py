@@ -19,9 +19,6 @@ app = FastAPI(
     title="Boffin",
     description="[GraphQL](/graphql)",
 )
-app.include_router(student_router)
-app.include_router(status_router)
-
 
 Query = merge_types(
     "Query",
@@ -36,7 +33,11 @@ Subscription = merge_types(
     (StudentSubscription,),
 )
 schema = strawberry.Schema(query=Query, mutation=Mutation, subscription=Subscription)
-app.include_router(GraphQLRouter(schema), prefix="/graphql", include_in_schema=False)
+graphql_router: GraphQLRouter = GraphQLRouter(schema, path="/graphql")
+
+app.include_router(graphql_router, include_in_schema=False)
+app.include_router(status_router)
+app.include_router(student_router)
 
 
 async def log_access(request: Request, response: Response) -> None:

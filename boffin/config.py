@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     server_workers: int = 1
     server_reload: bool = False
 
+    access_log: bool = True
     dev_mode: bool = False
 
     @cached_property

@@ -42,7 +42,13 @@ app.include_router(graphql_app, prefix="/graphql", include_in_schema=False)
 
 
 async def log_access(request: Request, response: Response) -> None:
-    if not get_settings().dev_mode or request.url.path == "/status/healthcheck":
+    if not any(
+        (
+            get_settings().access_log,
+            get_settings().dev_mode,
+            request.url.path != "/status/healthcheck",
+        )
+    ):
         return
 
     status_color = Fore.RESET

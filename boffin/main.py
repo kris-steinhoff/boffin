@@ -60,8 +60,7 @@ async def log_access(request: Request, response: Response) -> None:
         status_color = Style.BRIGHT + Back.RED
 
     access = (
-        f'{Style.BRIGHT}"{request.method.upper()} {request.url.path} '
-        f'{request.scope.get("type", "").upper()}/{request.scope.get("http_version", "")}"{Style.RESET_ALL} '
+        f"{Style.BRIGHT}{request.method.upper()} {request.url.path}{Style.RESET_ALL} "
         f"{status_color}{response.status_code} {HTTPStatus(response.status_code).phrase}{Style.RESET_ALL}"
     )
 

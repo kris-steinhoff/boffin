@@ -1,9 +1,15 @@
 services:
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: dev
+    build: .
+    develop:
+      watch:
+        - action: sync+restart
+          path: .
+          target: /app
+        - action: rebuild
+          path: Dockerfile
+        - action: rebuild
+          path: poetry.lock
     depends_on:
       - db
     environment:
@@ -11,10 +17,9 @@ services:
       REDIS_URL: redis://redis:6379/0
       DEV_MODE: 1
       FORCE_COLOR: 1
+      WEB_CONCURRENCY: 1  # sets the number of uvicorn workers
     env_file:
       - .env
-    volumes:
-      - .:/app:z
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8000/status/healthcheck"]
       interval: 5s
@@ -22,7 +27,7 @@ services:
       retries: 0
 
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:8000:80"
       - "127.0.0.1:5678:5678"
 
   db:

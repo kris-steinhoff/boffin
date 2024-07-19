@@ -89,19 +89,3 @@ async def logging_middleware(request: Request, call_next) -> Response:
         await log_access(request, response)
 
     return response
-
-
-if __name__ == "__main__":
-    import uvicorn
-
-    settings = get_settings()
-
-    uvicorn.run(
-        "boffin.main:app",
-        host=settings.server_host,
-        port=settings.server_port,
-        workers=settings.server_workers,
-        reload=settings.dev_mode,
-        access_log=False,
-        use_colors=True,
-    )

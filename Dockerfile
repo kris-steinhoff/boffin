@@ -1,29 +1,27 @@
-FROM python:3.12.4 as base
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-EXPOSE 8000
+FROM python:3.12-slim
+EXPOSE 80
 
-RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.8.3
-ENV PATH="/root/.local/bin:$PATH"
-COPY pyproject.toml poetry.lock /tmp/
-RUN poetry --directory=/tmp/ export --without-hashes -f requirements.txt -o /tmp/requirements-prod.txt
 
-FROM base as dev
-ENV SERVER_RELOAD=1
-CMD ["poetry", "run", "python3", "boffin/main.py"]
-RUN mkdir /app
+RUN groupadd -g 5000 app && useradd -k HOME_MODE=0755 -d /app -m -u 5000 -g 5000 app
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tini \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip install poetry==1.8.3
+
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR='/tmp/poetry_cache' \
+    PATH="/app/.venv/bin:$PATH"
+
 WORKDIR /app
-COPY --from=base /tmp/pyproject.toml /tmp/poetry.lock ./
-RUN poetry install --with=dev --with=test
+USER app
+
+COPY pyproject.toml poetry.lock ./
+RUN poetry install --no-root && rm -rf $POETRY_CACHE_DIR
+
 COPY . .
 RUN poetry install
 
-FROM python:3.12.4-slim as prod
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-ENV SERVER_WORKERS=4
-CMD ["python3", "boffin/main.py"]
-RUN mkdir /app
-WORKDIR /app
-COPY --from=base /tmp/requirements-prod.txt ./
-RUN pip install -r requirements-prod.txt
-COPY . .
-RUN pip install .
+ENTRYPOINT ["/bin/tini", "--"]
+CMD ["uvicorn", "boffin.main:app", "--host=0.0.0.0", "--port=80", "--no-access-log", "--use-colors"]

@@ -1,4 +1,5 @@
 *.pyc
+__pycache__
 /.mypy_cache/
 /.pytest_cache/
 /.github/
@@ -10,3 +11,9 @@
 /.git*
 /.pre-commit-config.yaml
 /.env
+/.vscode
+/.dmypy.json
+/.dockerignore
+/docker-compose.yaml
+
+/Dockerfile

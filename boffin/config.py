@@ -9,11 +9,6 @@ class Settings(BaseSettings):
     database_url: str
     redis_url: str
 
-    server_host: str = "0.0.0.0"
-    server_port: int = 8000
-    server_workers: int = 1
-    server_reload: bool = False
-
     access_log: bool = True
     dev_mode: bool = False
 

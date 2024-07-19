@@ -5,6 +5,7 @@ EXPOSE 80
 RUN groupadd -g 5000 app && useradd -k HOME_MODE=0755 -d /app -m -u 5000 -g 5000 app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tini \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 RUN pip install poetry==1.8.3
 

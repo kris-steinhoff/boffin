@@ -4,10 +4,12 @@ from http import HTTPStatus
 import strawberry
 import structlog
 from colorama import Back, Fore, Style
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from strawberry.fastapi import GraphQLRouter
 from strawberry.tools import merge_types
 
+from boffin.common.errors import DoesNotExist
+from boffin.common.models import InvalidPrefixedID
 from boffin.config import get_settings
 from boffin.status.rest import router as status_router
 from boffin.student.graphql import StudentMutation, StudentQuery, StudentSubscription
@@ -88,3 +90,15 @@ async def logging_middleware(request: Request, call_next) -> Response:
         await log_access(request, response)
 
     return response
+
+
+@app.exception_handler(DoesNotExist)
+async def exception_handler_for_does_not_exist(request: Request, exc: DoesNotExist):
+    raise HTTPException(status_code=404, detail=f"{exc.object_id} does not exist")
+
+
+@app.exception_handler(InvalidPrefixedID)
+async def exception_handler_for_invalid_prefix_id(
+    request: Request, exc: InvalidPrefixedID
+):
+    raise HTTPException(status_code=400, detail=str(exc))

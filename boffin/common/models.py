@@ -10,6 +10,10 @@ from sqlmodel import Field
 from boffin.common.base62 import Base62
 
 
+class InvalidPrefixedID(ValueError):
+    pass
+
+
 class PrefixedID(TypeDecorator):
     impl = UUID(as_uuid=True)
     cache_ok = True
@@ -24,7 +28,7 @@ class PrefixedID(TypeDecorator):
         super().__init__(*args, **kwargs)
 
         if "_" in prefix:
-            raise ValueError("Prefix cannot contain underscores")
+            raise InvalidPrefixedID("Prefix cannot contain underscores")
 
         self.prefix = prefix
 
@@ -32,11 +36,14 @@ class PrefixedID(TypeDecorator):
         try:
             uuid_encoded = str(value).split("_")[1]
         except (IndexError, AttributeError):
-            raise ValueError(
-                "Invalid value for PrefixedShortUUID (must include an underscore "
-                f"character): {value}"
+            raise InvalidPrefixedID(
+                "Invalid value for PrefixedID, must include an underscore "
+                f"character: {value}"
             )
-        return uuid.UUID(int=Base62.decode(uuid_encoded))
+        try:
+            return uuid.UUID(int=Base62.decode(uuid_encoded))
+        except ValueError as exc:
+            raise InvalidPrefixedID(f"Invalid value for PrefixedID, {exc}: {value}")
 
     def process_result_value(self, value: Any | None, dialect: Dialect) -> Any:
         try:

@@ -1,6 +1,8 @@
 import structlog
+from result import Err, Ok, Result
 from sqlmodel import Session, select
 
+from boffin.common.errors import DataError, DoesNotExist
 from boffin.config import get_settings
 from boffin.student import StudentId
 from boffin.student.models import Student
@@ -18,7 +20,7 @@ __all__ = [
 logger = structlog.get_logger()
 
 
-async def create_student(first_name: str, last_name: str) -> Student:
+async def create_student(first_name: str, last_name: str) -> Result[Student, DataError]:
     student = Student(first_name=first_name, last_name=last_name)
     session = Session(get_settings().database_engine)
     session.add(student)
@@ -27,17 +29,17 @@ async def create_student(first_name: str, last_name: str) -> Student:
     session.close()
     await StudentDataEvent.emit_created(str(student.id))
     logger.info("Student created", student_id=student.id)
-    return student
+    return Ok(student)
 
 
-async def get_student(student_id: StudentId) -> Student | None:
+async def get_student(student_id: StudentId) -> Result[Student, DoesNotExist]:
     session = Session(get_settings().database_engine)
     student = session.exec(
         select(Student).where(Student.id == student_id)
     ).one_or_none()
     session.close()
 
-    return student
+    return student and Ok(student) or Err(DoesNotExist(object_id=student_id))
 
 
 async def list_students() -> list[Student]:

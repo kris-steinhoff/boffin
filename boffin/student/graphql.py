@@ -1,6 +1,7 @@
-from typing import AsyncGenerator
+from typing import AsyncGenerator, assert_never
 
 import strawberry
+from result import Err, Ok
 
 from boffin.config import get_settings
 from boffin.student import StudentId, services
@@ -24,11 +25,14 @@ class StudentType:
         )
 
 
-async def resolve_student(student_id: str) -> StudentType | None:
-    student = await services.get_student(StudentId(student_id))
-    if student is None:
-        return None
-    return StudentType.from_pydantic(student)
+async def resolve_student(student_id: str) -> StudentType:
+    match result := await services.get_student(StudentId(student_id)):
+        case Ok(student):
+            return StudentType.from_model(student)
+        case Err(error):
+            raise error
+        case _:
+            assert_never(result)
 
 
 async def resolve_studentes() -> list[StudentType]:
@@ -38,7 +42,7 @@ async def resolve_studentes() -> list[StudentType]:
 
 @strawberry.type
 class StudentQuery:
-    student: StudentType | None = strawberry.field(resolver=resolve_student)
+    student: StudentType = strawberry.field(resolver=resolve_student)
     students: list[StudentType] = strawberry.field(resolver=resolve_studentes)
 
 
@@ -46,8 +50,13 @@ class StudentQuery:
 class StudentMutation:
     @strawberry.mutation
     async def create_student(self, first_name: str, last_name: str) -> StudentType:
-        student = await services.create_student(first_name, last_name)
-        return StudentType.from_pydantic(student)
+        match result := await services.create_student(first_name, last_name):
+            case Ok(student):
+                return StudentType.from_model(student)
+            case Err(ex):
+                raise ex
+            case _:
+                assert_never(result)
 
 
 @strawberry.experimental.pydantic.type(model=StudentDataEvent, all_fields=True)

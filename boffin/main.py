@@ -94,7 +94,7 @@ async def logging_middleware(request: Request, call_next) -> Response:
 
 @app.exception_handler(DoesNotExist)
 async def exception_handler_for_does_not_exist(request: Request, exc: DoesNotExist):
-    raise HTTPException(status_code=404, detail=f"{exc.object_id} does not exist")
+    raise HTTPException(status_code=404, detail=str(exc))
 
 
 @app.exception_handler(InvalidPrefixedID)

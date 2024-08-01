@@ -5,6 +5,7 @@ import strawberry
 import structlog
 from colorama import Back, Fore, Style
 from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 from strawberry.tools import merge_types
 
@@ -90,6 +91,19 @@ async def logging_middleware(request: Request, call_next) -> Response:
         await log_access(request, response)
 
     return response
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:4173",
+        "http://localhost:5173",
+        "http://localhost:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.exception_handler(DoesNotExist)

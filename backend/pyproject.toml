@@ -64,11 +64,3 @@ env = ["DATABASE_URL=sqlite:///db.sqlite3"]
 
 [tool.coverage.report]
 exclude_lines = ["if __name__ == .__main__.:", "if TYPE_CHECKING:"]
-
-
-[tool.mypy]
-plugins = [
-    "pydantic.mypy",
-    "strawberry.ext.mypy_plugin",
-    "sqlalchemy.ext.mypy.plugin",
-]

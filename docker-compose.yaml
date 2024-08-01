@@ -1,6 +1,6 @@
 services:
-  api:
-    build: .
+  backend:
+    build: ./backend
     develop:
       watch:
         - action: sync+restart

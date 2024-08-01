@@ -14,7 +14,7 @@ repos:
       - id: typos
         name: typos
         language: system
-        entry: poetry run typos --force-exclude
+        entry: poetry --directory backend run typos --force-exclude
         types_or: [python, pyi]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.10
@@ -30,5 +30,5 @@ repos:
       - id: mypy
         name: mypy
         language: system
-        entry: poetry run mypy
+        entry: poetry --directory backend run mypy
         types_or: [python, pyi]

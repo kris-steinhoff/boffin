@@ -1,12 +1,11 @@
 import structlog
-from result import Err, Ok, Result
-from sqlmodel import select
-
 from boffin.common.db import get_session
 from boffin.common.errors import DataError, DoesNotExist
 from boffin.student import StudentId
 from boffin.student.models import Student
 from boffin.student.types import StudentDataEvent
+from result import Err, Ok, Result
+from sqlmodel import select
 
 __all__ = [
     "create_student",

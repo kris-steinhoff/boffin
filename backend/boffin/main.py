@@ -3,18 +3,17 @@ from http import HTTPStatus
 
 import strawberry
 import structlog
-from colorama import Back, Fore, Style
-from fastapi import FastAPI, HTTPException, Request, Response
-from fastapi.middleware.cors import CORSMiddleware
-from strawberry.fastapi import GraphQLRouter
-from strawberry.tools import merge_types
-
 from boffin.common.errors import DoesNotExist
 from boffin.common.models import InvalidPrefixedID
 from boffin.config import get_settings
 from boffin.status.rest import router as status_router
 from boffin.student.graphql import StudentMutation, StudentQuery, StudentSubscription
 from boffin.student.rest import router as student_router
+from colorama import Back, Fore, Style
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.middleware.cors import CORSMiddleware
+from strawberry.fastapi import GraphQLRouter
+from strawberry.tools import merge_types
 
 logger = structlog.get_logger()
 
@@ -96,8 +95,7 @@ async def logging_middleware(request: Request, call_next) -> Response:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:4173",
-        "http://localhost:5173",
+        "http://localhost:8001",
         "http://localhost:8000",
     ],
     allow_credentials=True,
